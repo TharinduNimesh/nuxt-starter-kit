@@ -72,8 +72,8 @@ export const useAuth = () => {
   const signOut = async () => {
     try {
       await $fetch("/api/auth/sign-out", { method: "POST" });
-      user.value = null;
-      accessToken.value = null;
+      // user.value = null;
+      // accessToken.value = null;
       // Force reload to clear any cached state
       window.location.href = '/auth/sign-in'
     } catch (error) {

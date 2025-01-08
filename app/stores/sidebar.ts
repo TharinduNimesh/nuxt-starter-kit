@@ -4,13 +4,13 @@ export const useSidebarStore = defineStore('sidebar', {
   state: () => ({
     isCollapsed: false,
     isMobileOpen: false,
-    sidebarWidth: 'w-64',
+    sidebarWidth: 'w-56',
   }),
 
   actions: {
     toggleCollapse() {
       this.isCollapsed = !this.isCollapsed;
-      this.sidebarWidth = this.isCollapsed ? 'w-24' : 'w-64';
+      this.sidebarWidth = this.isCollapsed ? 'w-24' : 'w-56';
     },
     toggleMobileMenu() {
       this.isMobileOpen = !this.isMobileOpen;

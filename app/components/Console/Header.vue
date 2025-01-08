@@ -71,21 +71,22 @@
         />
 
         <!-- Profile Dropdown -->
-        <div class="relative">
-          <button
-            class="flex items-center space-x-1 p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors"
-          >
+        <UDropdown :items="profileItems" :popper="{ placement: 'bottom-end' }">
+          <button class="flex items-center space-x-2 p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors">
             <img
-              src="https://ui-avatars.com/api/?name=Jeivine+Kief&background=146de0&color=fff"
-              alt="Jeivine Kief"
+              :src="`https://ui-avatars.com/api/?name=${formatName(user?.name || user?.email)}&background=146de0&color=fff`"
+              :alt="user?.name || user?.email"
               class="w-8 h-8 rounded-full"
             />
+            <span class="hidden md:block text-sm font-medium text-slate-700 dark:text-zinc-200 max-w-[120px] truncate">
+              {{ formatDisplayText(user?.name || user?.email, 15) }}
+            </span>
             <Icon
               name="i-uil-angle-down"
-              class="w-5 h-5 text-slate-400 dark:text-zinc-500 hidden md:block"
+              class="w-5 h-5 text-slate-400 dark:text-zinc-500 hidden md:block flex-shrink-0"
             />
           </button>
-        </div>
+        </UDropdown>
       </div>
     </div>
   </header>
@@ -94,8 +95,61 @@
 <script setup lang="ts">
 const sidebarStore = useSidebarStore();
 const colorMode = useColorMode();
+const { user, signOut } = useAuth();
 
 const toggleColorMode = () => {
   colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
 };
+
+const formatDisplayText = (text: string | null | undefined, maxLength = 20) => {
+  if (!text) return ''
+  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
+}
+
+const formatName = (text: string | null | undefined) => {
+  if (!text) return 'U'
+  return text.split(/[@\s]/, 1)[0]?.substring(0, 2).toUpperCase()
+}
+
+const profileItems = computed(() => [
+  [
+    {
+      label: formatEmail(user.value?.email || ''),
+      slot: "email",
+      disabled: true,
+    },
+    {
+      label: `Role: ${user.value?.role?.toLowerCase()}`,
+      slot: "role",
+      disabled: true,
+    },
+  ],
+  [
+    {
+      label: "Profile",
+      icon: "i-uil-user",
+      to: "/console/profile",
+    },
+    {
+      label: "Settings",
+      icon: "i-uil-setting",
+      to: "/console/settings",
+    },
+  ],
+  [
+    {
+      label: "Sign Out",
+      icon: "i-uil-signout",
+      click: () => signOut(),
+    },
+  ],
+])
+
+const formatEmail = (email: string, maxLength = 25) => {
+  if (!email || email.length <= maxLength) return email
+  const [local, domain] = email.split('@')
+  if (!domain || !local) return email;
+  const shortenedLocal = local.substring(0, maxLength - domain.length - 2) + '...'
+  return `${shortenedLocal}@${domain}`
+}
 </script>

@@ -32,6 +32,7 @@ export default defineNuxtConfig({
     },
     "/console/**": {
       ssr: false,
+      appMiddleware: ['role']
     },
   },
 });
