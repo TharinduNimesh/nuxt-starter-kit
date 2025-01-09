@@ -10,12 +10,22 @@
       ]"
     >
       <!-- Logo Section -->
-      <div class="p-6 border-b border-slate-200 dark:border-zinc-800 overflow-hidden whitespace-nowrap">
-        <div class="flex items-center" :class="{ 'justify-center': sidebarStore.isCollapsed }">
+      <div
+        class="p-6 border-b border-slate-200 dark:border-zinc-800 overflow-hidden whitespace-nowrap"
+      >
+        <div
+          class="flex items-center"
+          :class="{ 'justify-center': sidebarStore.isCollapsed }"
+        >
           <img src="/logo.png" alt="Logo" class="h-10 w-auto" />
           <div v-if="!sidebarStore.isCollapsed" class="flex flex-col ml-3">
-            <span class="text-lg font-bold text-slate-900 dark:text-white">Nuxt Kit</span>
-            <span class="text-sm text-slate-500 dark:text-zinc-400 capitalize">{{ user?.role?.toLowerCase() }}</span>
+            <span class="text-lg font-bold text-slate-900 dark:text-white"
+              >Nuxt Kit</span
+            >
+            <span
+              class="text-sm text-slate-500 dark:text-zinc-400 capitalize"
+              >{{ user?.role?.toLowerCase() }}</span
+            >
           </div>
         </div>
       </div>
@@ -24,184 +34,52 @@
       <nav class="flex-1 overflow-y-auto overflow-x-hidden">
         <ul class="p-4 space-y-2">
           <!-- Main Navigation -->
-          <li v-for="link in filteredMainNavLinks" :key="link.path">
-            <NuxtLink
-              :class="{
-                'justify-center': sidebarStore.isCollapsed,
-                'bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400':
-                  isLinkActive(link.path),
-              }"
-              :to="link.path"
-              class="flex items-center px-4 py-3 text-slate-600 dark:text-zinc-400 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-950/50 hover:text-primary-600 dark:hover:text-primary-400 group transition-colors duration-200"
-            >
-              <div class="relative flex items-center">
-                <Icon
-                  :name="link.icon"
-                  class="w-5 h-5"
-                  :class="{
-                    'text-primary-600 dark:text-primary-400': isLinkActive(
-                      link.path
-                    ),
-                  }"
-                />
-                <span
-                  v-if="!sidebarStore.isCollapsed"
-                  class="ml-3 text-sm font-medium whitespace-nowrap"
-                  :class="{
-                    'text-primary-600 dark:text-primary-400': isLinkActive(
-                      link.path
-                    ),
-                  }"
-                >
-                  {{ link.name }}
-                </span>
-                <span
-                  v-if="link.badge && !sidebarStore.isCollapsed"
-                  class="ml-auto bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 text-xs font-medium px-2 py-0.5 rounded-full"
-                >
-                  {{ link.badge }}
-                </span>
-              </div>
-
-              <!-- Tooltip for collapsed state -->
-              <div
-                v-if="sidebarStore.isCollapsed"
-                class="absolute left-full ml-6 px-2 py-1 bg-slate-800 dark:bg-zinc-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap"
-              >
-                {{ link.name }}
-                <span
-                  v-if="link.badge"
-                  class="ml-2 bg-primary-500 dark:bg-primary-600 px-1.5 py-0.5 rounded-full text-xs"
-                >
-                  {{ link.badge }}
-                </span>
-              </div>
-            </NuxtLink>
-          </li>
+          <ConsoleNavigationSection
+            :links="filteredMainNavLinks"
+            :is-collapsed="sidebarStore.isCollapsed"
+          />
 
           <!-- Other Links -->
-          <div v-if="filteredOtherLinks.length" class="pt-4 mt-4 border-t border-slate-200 dark:border-zinc-800">
-            <h3
-              v-if="!sidebarStore.isCollapsed"
-              class="px-4 text-xs font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2"
-            >
-              Other
-            </h3>
-            <li v-for="link in filteredOtherLinks" :key="link.path">
-              <NuxtLink
-                :to="link.path"
-                class="flex items-center px-4 py-3 text-slate-600 dark:text-zinc-400 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-950/50 hover:text-primary-600 dark:hover:text-primary-400 group transition-colors duration-200"
-                :class="{
-                  'justify-center': sidebarStore.isCollapsed,
-                  'bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400':
-                    isLinkActive(link.path),
-                }"
-              >
-                <div class="relative flex items-center">
-                  <Icon
-                    :name="link.icon"
-                    class="w-5 h-5"
-                    :class="{
-                      'text-primary-600 dark:text-primary-400': isLinkActive(
-                        link.path
-                      ),
-                    }"
-                  />
-                  <span
-                    v-if="!sidebarStore.isCollapsed"
-                    class="ml-3 text-sm font-medium whitespace-nowrap"
-                    :class="{
-                      'text-primary-600 dark:text-primary-400': isLinkActive(
-                        link.path
-                      ),
-                    }"
-                  >
-                    {{ link.name }}
-                  </span>
-                </div>
-
-                <!-- Tooltip for collapsed state -->
-                <div
-                  v-if="sidebarStore.isCollapsed"
-                  class="absolute left-full ml-6 px-2 py-1 bg-slate-800 dark:bg-zinc-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap"
-                >
-                  {{ link.name }}
-                </div>
-              </NuxtLink>
-            </li>
-          </div>
+          <ConsoleNavigationSection
+            :links="filteredOtherLinks"
+            :is-collapsed="sidebarStore.isCollapsed"
+            title="Other"
+            has-border
+          />
 
           <!-- Account Links -->
-          <div v-if="filteredAccountLinks.length" class="pt-4 mt-4 border-t border-slate-200 dark:border-zinc-800">
-            <h3
-              v-if="!sidebarStore.isCollapsed"
-              class="px-4 text-xs font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mb-2"
-            >
-              Account
-            </h3>
-            <li v-for="link in filteredAccountLinks" :key="link.path">
-              <NuxtLink
-                :to="link.path"
-                class="flex items-center px-4 py-3 text-slate-600 dark:text-zinc-400 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-950/50 hover:text-primary-600 dark:hover:text-primary-400 group transition-colors duration-200"
-                :class="{
-                  'justify-center': sidebarStore.isCollapsed,
-                  'bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400':
-                    isLinkActive(link.path),
-                }"
-              >
-                <div class="relative flex items-center">
-                  <Icon
-                    :name="link.icon"
-                    class="w-5 h-5"
-                    :class="{
-                      'text-primary-600 dark:text-primary-400': isLinkActive(
-                        link.path
-                      ),
-                    }"
-                  />
-                  <span
-                    v-if="!sidebarStore.isCollapsed"
-                    class="ml-3 text-sm font-medium whitespace-nowrap"
-                    :class="{
-                      'text-primary-600 dark:text-primary-400': isLinkActive(
-                        link.path
-                      ),
-                    }"
-                  >
-                    {{ link.name }}
-                  </span>
-                </div>
-
-                <!-- Tooltip for collapsed state -->
-                <div
-                  v-if="sidebarStore.isCollapsed"
-                  class="absolute left-full ml-6 px-2 py-1 bg-slate-800 dark:bg-zinc-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap"
-                >
-                  {{ link.name }}
-                </div>
-              </NuxtLink>
-            </li>
-          </div>
+          <ConsoleNavigationSection
+            :links="filteredAccountLinks"
+            :is-collapsed="sidebarStore.isCollapsed"
+            title="Account"
+            has-border
+          />
         </ul>
       </nav>
 
       <!-- User Profile -->
-      <div class="p-4 border-t border-slate-200 dark:border-zinc-800 overflow-hidden whitespace-nowrap">
+      <div
+        class="p-4 border-t border-slate-200 dark:border-zinc-800 overflow-hidden whitespace-nowrap"
+      >
         <div
           class="flex items-center px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-zinc-800/50"
           :class="{ 'justify-center': sidebarStore.isCollapsed }"
         >
           <img
-            :src="`https://ui-avatars.com/api/?name=${formatName(user?.name || user?.email)}&background=146de0&color=fff`"
+            :src="`https://ui-avatars.com/api/?name=${formatName(
+              user?.name || user?.email
+            )}&background=146de0&color=fff`"
             :alt="user?.name || user?.email"
             class="w-8 h-8 rounded-full"
           />
           <div v-if="!sidebarStore.isCollapsed" class="flex-1 min-w-0 ml-3">
-            <p class="text-sm font-medium text-slate-900 dark:text-white truncate">
+            <p
+              class="text-sm font-medium text-slate-900 dark:text-white truncate"
+            >
               {{ formatDisplayText(user?.name || user?.email) }}
             </p>
             <p class="text-xs text-slate-500 dark:text-zinc-400 truncate">
-              {{ user?.email ? formatEmail(user.email) : '' }}
+              {{ user?.email ? formatEmail(user.email) : "" }}
             </p>
           </div>
           <button
@@ -262,7 +140,7 @@ nav::-webkit-scrollbar {
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { debounce } from "lodash-es";
-import { mainNavLinks, otherLinks, accountLinks } from '~/config/navigation'
+import { mainNavLinks, otherLinks, accountLinks } from "~/config/navigation";
 
 const sidebarStore = useSidebarStore();
 const route = useRoute();
@@ -298,22 +176,22 @@ onUnmounted(() => {
 
 // Navigation Links
 const filteredMainNavLinks = computed(() => {
-  return mainNavLinks.filter(link => 
-    !link.roles || link.roles.includes(user.value?.role || '')
-  )
-})
+  return mainNavLinks.filter(
+    (link) => !link.roles || link.roles.includes(user.value?.role || "")
+  );
+});
 
 const filteredOtherLinks = computed(() => {
-  return otherLinks.filter(link => 
-    !link.roles || link.roles.includes(user.value?.role || '')
-  )
-})
+  return otherLinks.filter(
+    (link) => !link.roles || link.roles.includes(user.value?.role || "")
+  );
+});
 
 const filteredAccountLinks = computed(() => {
-  return accountLinks.filter(link => 
-    !link.roles || link.roles.includes(user.value?.role || '')
-  )
-})
+  return accountLinks.filter(
+    (link) => !link.roles || link.roles.includes(user.value?.role || "")
+  );
+});
 
 const isLinkActive = (path: string) => {
   if (path === "/console") {
@@ -324,25 +202,24 @@ const isLinkActive = (path: string) => {
 
 // Utility functions for formatting text
 const formatDisplayText = (text: string | null | undefined, maxLength = 8) => {
-  if (!text) return ''
-  const name = text.split('@')[0] // Get name part if it's an email
-  if (!name) return text
-  return name.length > maxLength ? name.substring(0, maxLength) + '...' : name
-}
+  if (!text) return "";
+  const name = text.split("@")[0]; // Get name part if it's an email
+  if (!name) return text;
+  return name.length > maxLength ? name.substring(0, maxLength) + "..." : name;
+};
 
 const formatEmail = (email: string, maxLength = 10) => {
-  if (!email) return ''
-  const [local] = email.split('@')
-  if (!local) return email
-  const domain = 'me' // Simplified domain display
-  return local.length > maxLength 
-    ? `${local.substring(0, 5)}...@${domain}` 
-    : `${local}@${domain}`
-}
+  if (!email) return "";
+  const [local] = email.split("@");
+  if (!local) return email;
+  const domain = "me"; // Simplified domain display
+  return local.length > maxLength
+    ? `${local.substring(0, 5)}...@${domain}`
+    : `${local}@${domain}`;
+};
 
 const formatName = (text: string | null | undefined) => {
-  if (!text) return 'U'
-  return text.split(/[@\s]/, 1)[0]?.substring(0, 2).toUpperCase()
-}
+  if (!text) return "U";
+  return text.split(/[@\s]/, 1)[0]?.substring(0, 2).toUpperCase();
+};
 </script>
-

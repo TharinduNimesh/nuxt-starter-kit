@@ -13,7 +13,7 @@ export function useApiFetch<T>(url: string, options: UseFetchOptions<T> = {}) {
     ...options,
   };
 
-  if (process.client) {
+  if (import.meta.client) {
     defaults.headers = {
       ...defaults.headers,
       "client-platform": "browser",
@@ -33,7 +33,7 @@ export async function $apiFetch<T>(
     ...(accessToken.value
       ? { Authorization: `Bearer ${accessToken.value}` }
       : {}),
-    ...(process.client ? { "client-platform": "browser" } : {}),
+    ...(import.meta.client ? { "client-platform": "browser" } : {}),
     ...options.headers,
   };
 
