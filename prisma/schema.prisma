@@ -1,34 +1,64 @@
 generator client {
-	provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-	provider = "mongodb"
-	url      = env("DATABASE_URL")
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
 }
 
 enum Role {
-  ADMIN
-  USER
+    ADMIN
+    USER
 }
 
 model User {
-	id            String         @id @default(auto()) @map("_id") @db.ObjectId
-	email         String         @unique
-	name          String?
-	password      String
-	role          Role           @default(USER)
-	refreshTokens RefreshToken[]
-	createdAt     DateTime       @default(now())
-	updatedAt     DateTime       @updatedAt
+    id            String         @id @default(auto()) @map("_id") @db.ObjectId
+    email         String         @unique
+    name          String?
+    password      String
+    role          Role           @default(USER)
+    refreshTokens RefreshToken[]
+    createdAt     DateTime       @default(now())
+    updatedAt     DateTime       @updatedAt
+
+    // Related to Invitation Process.
+    invitations Invitation[]
 }
 
 model RefreshToken {
-	id        String   @id @default(auto()) @map("_id") @db.ObjectId
-	token     String   @unique
-	userId    String   @db.ObjectId
-	user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-	expiresAt DateTime
-	createdAt DateTime @default(now())
-	revoked   Boolean  @default(false)
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    token     String   @unique
+    userId    String   @db.ObjectId
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+    revoked   Boolean  @default(false)
+}
+
+//========================================
+// Core Authentication Schema Above
+// Custom Schema Below
+//========================================
+
+enum InvitationStatus {
+    PENDING
+    ACCEPTED
+    EXPIRED
+    DECLINED
+}
+
+model Invitation {
+    id         String           @id @default(auto()) @map("_id") @db.ObjectId
+    email      String
+    role       Role
+    invitedBy  String           @db.ObjectId
+    inviter    User             @relation(fields: [invitedBy], references: [id])
+    isAccepted Boolean          @default(false)
+    acceptedAt DateTime?
+    expiresAt  DateTime
+    token      String           @unique
+    status     InvitationStatus @default(PENDING)
+    createdAt  DateTime         @default(now())
+    updatedAt  DateTime         @updatedAt
 }

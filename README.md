@@ -1,75 +1,133 @@
-# Nuxt Minimal Starter
+# Nuxt Starter Kit
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A production-ready starter template for Nuxt 3 applications with built-in features and integrations.
 
-## Setup
+## Features
 
-Make sure to install dependencies:
+- 🔐 **Authentication & Authorization**
+  - JWT-based authentication
+  - Role-based access control (RBAC)
+  - User invitation system
+  - [Learn more about auth](./docs/authentication.md)
+
+- 🎨 **UI & Components**
+  - [Nuxt UI](https://ui.nuxt.com/) integration
+  - Dark mode support
+  - Responsive layouts
+  - Form validation with Zod
+  - Interactive data tables
+  - Toast notifications
+
+- 🛠 **Development Tools**
+  - TypeScript support
+  - ESLint & Prettier configuration
+  - Git hooks with Husky
+  - Prisma for database management
+  - [Database integration details](./docs/database.md)
+
+- 📧 **Communication**
+  - Email service integration
+  - Customizable templates
+  - Queue system for notifications
+  - [Email integration guide](./docs/mail.md)
+
+- 💳 **Payments**
+  - Stripe integration
+  - Subscription management
+  - Payment history
+  - [Payment system setup](./docs/payments.md)
+
+- 🔒 **Security**
+  - Rate limiting
+  - Input sanitization
+  - CORS configuration
+  - Environment variables management
+  - [Security best practices](./docs/security.md)
+
+## Quick Start
 
 ```bash
-# npm
+# Clone the repository
+git clone https://github.com/yourusername/nuxt-starter-kit.git
+
+# Install dependencies
 npm install
 
-# pnpm
-pnpm install
+# Copy environment variables
+cp .env.example .env
 
-# yarn
-yarn install
-
-# bun
-bun install
+# Start development server
+npm run dev
 ```
 
-## Development Server
+## Environment Setup
 
-Start the development server on `http://localhost:3000`:
+1. Configure your database connection in `.env`
+2. Set up your mail server credentials
+3. Add your JWT secrets
+4. Configure other optional services
+
+## Project Structure
+
+```
+nuxt-starter-kit/
+│
+├── app/                    # Nuxt application
+│   ├── components/        # Vue components
+│   ├── composables/       # Vue composables
+│   ├── layouts/          # Page layouts
+│   └── pages/            # Application pages
+│
+├── prisma/                # Database schema and migrations
+├── server/                # Server-side code
+│   ├── api/              # API routes
+│   ├── middleware/       # Server middleware
+│   └── utils/           # Server utilities
+│
+└── shared/               # Shared code
+    └── schemas/         # Validation schemas
+```
+
+## Core Technologies
+
+- [Nuxt 3](https://nuxt.com/)
+- [Vue 3](https://vuejs.org/)
+- [Nuxt UI](https://ui.nuxt.com/)
+- [Prisma](https://www.prisma.io/)
+- [MongoDB](https://www.mongodb.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+
+## Development
 
 ```bash
-# npm
+# Run development server
 npm run dev
 
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
+# Build for production
 npm run build
 
-# pnpm
-pnpm build
+# Run production build
+npm run start
 
-# yarn
-yarn build
+# Run linting
+npm run lint
 
-# bun
-bun run build
+# Run type checking
+npm run typecheck
 ```
 
-Locally preview production build:
+## Documentation
 
-```bash
-# npm
-npm run preview
+Detailed documentation for specific features:
 
-# pnpm
-pnpm preview
+- [Authentication & Authorization](./docs/authentication.md)
+- [Database Integration](./docs/database.md)
+- [Email System](./docs/mail.md)
+- [Payment Integration](./docs/payments.md)
+- [Security](./docs/security.md)
+- [API Documentation](./docs/api.md)
+- [Permissions](./docs/permissions.md)
 
-# yarn
-yarn preview
+## License
 
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+MIT License - see [LICENSE](LICENSE) for details

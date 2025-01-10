@@ -1,8 +1,9 @@
 import { H3Event } from "h3";
 import { verifyAccessToken } from "../utils/jwt";
+import { can, getConditions } from "../utils/permissions";
+import type { User } from "@prisma/client";
 
 export default defineEventHandler(async (event: H3Event) => {
-  // Skip auth check for non-API routes and auth-related API routes
   if (!event.path.startsWith("/api/") || event.path.includes("/api/auth/")) {
     return;
   }
@@ -14,9 +15,25 @@ export default defineEventHandler(async (event: H3Event) => {
     }
 
     const payload = verifyAccessToken(token);
-    event.context.auth = payload;
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId }
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Add auth context for downstream handlers
+    event.context.auth = {
+      user,
+      can: (resource: string, operation: string, data?: any) => 
+        can(user, resource as any, operation as any, data),
+      getConditions: (resource: string) => 
+        getConditions(user, resource as any)
+    };
+
   } catch (error) {
-    return createError({
+    throw createError({
       statusCode: 401,
       message: "Unauthorized",
     });
