@@ -2,104 +2,132 @@ import type { Prisma, User } from "@prisma/client";
 
 export type Operation = "create" | "read" | "update" | "delete";
 export type Resource = "User" | "RefreshToken" | "Invitation";
-
 export type Role = "ADMIN" | "USER" | "PUBLIC";
 
-export interface InvitationData {
-  token?: string;
-  email?: string;
-}
-
-type PermissionCheck<T> = boolean | ((user: User, data?: T) => boolean);
-
-interface Permission<T = any> {
+interface BasePermission<T = any> {
   operations: Operation[];
+  description: string;
   conditions?: (
     user: User
-  ) => Prisma.UserWhereInput | Prisma.RefreshTokenWhereInput;
-  check?: PermissionCheck<T>;
+  ) =>
+    | Prisma.UserWhereInput
+    | Prisma.RefreshTokenWhereInput
+    | Prisma.InvitationWhereInput;
+  check?: (user: User, data: T) => boolean | Promise<boolean>;
 }
 
-type Permissions = {
-  [K in Resource]: Permission;
-};
+// Resource-specific permissions
+interface UserPermission extends BasePermission {
+  resourceId?: (user: User) => string;
+}
 
-const PERMISSIONS: { [R in Role]: Permissions } = {
+interface RefreshTokenPermission extends BasePermission {
+  userId?: (user: User) => string;
+}
+
+interface InvitationPermission extends BasePermission {
+  emailMatch?: (user: User) => string;
+}
+
+const PERMISSIONS: {
+  [R in Role]: {
+    User?: UserPermission;
+    RefreshToken?: RefreshTokenPermission;
+    Invitation?: InvitationPermission;
+  };
+} = {
   ADMIN: {
     User: {
       operations: ["create", "read", "update", "delete"],
+      description: "Full access to all user operations",
     },
     RefreshToken: {
       operations: ["read", "delete"],
+      description: "Can view and revoke any refresh token",
     },
     Invitation: {
       operations: ["create", "read", "update", "delete"],
+      description: "Full control over invitations",
     },
   },
   USER: {
     User: {
       operations: ["read", "update"],
-      conditions: (user) => ({
-        id: user.id,
-      }),
+      description: "Can read and update own profile",
+      resourceId: (user) => user.id,
       check: (user, data) => user.id === data?.id,
     },
     RefreshToken: {
       operations: ["read"],
+      description: "Can view own refresh tokens",
       conditions: (user) => ({
         userId: user.id,
       }),
     },
     Invitation: {
       operations: ["read"],
+      description: "Can view invitations sent to their email",
       conditions: (user) => ({
         email: user.email,
+        status: "PENDING",
       }),
     },
   },
   PUBLIC: {
-    User: {
-      operations: ["read"],
-    },
-    RefreshToken: {
-      operations: [],
-    },
     Invitation: {
       operations: ["read", "update"],
-      check: (user, data: InvitationData) => {
-        // Allow reading if token and email match
-        if (!data.token || !data.email) return false;
-        return true; // Actual token/email validation will be done in the route handler
+      description: "Can verify and accept/reject invitations with valid token",
+      check: async (_, data) => {
+        if (!data?.token || !data?.email) return false;
+        const invitation = await prisma.invitation.findFirst({
+          where: { token: data.token, email: data.email },
+        });
+        return !!invitation;
       },
     },
   },
 };
 
-export function can(
-  user: User | null, // Make user optional for PUBLIC role
+export async function can(
+  user: User | null,
   resource: Resource,
   operation: Operation,
   data?: any
-): boolean {
-  // Handle PUBLIC role when user is null
+): Promise<boolean> {
   const role = user?.role || "PUBLIC";
   const permissions = PERMISSIONS[role]?.[resource];
 
-  if (!permissions) return false;
-  if (!permissions.operations.includes(operation)) return false;
-
-  if (permissions.check && data && user) {
-    return typeof permissions.check === "function"
-      ? permissions.check(user, data)
-      : permissions.check;
+  if (!permissions?.operations.includes(operation)) {
+    return Promise.resolve(false);
   }
 
-  return true;
+  const checks: Promise<boolean>[] = [];
+
+  if (permissions.check) {
+    checks.push(Promise.resolve(permissions.check(user!, data)));
+  }
+
+  if (
+    resource === "User" &&
+    (permissions as UserPermission).resourceId &&
+    data?.id
+  ) {
+    const resourceIdFn = (permissions as UserPermission).resourceId;
+    checks.push(Promise.resolve(resourceIdFn?.(user!) === data.id));
+  }
+
+  return Promise.all(checks).then((results) =>
+    results.every((result) => result)
+  );
 }
 
 export function getConditions(
   user: User,
   resource: Resource
-): Prisma.UserWhereInput | Prisma.RefreshTokenWhereInput | undefined {
+):
+  | Prisma.UserWhereInput
+  | Prisma.RefreshTokenWhereInput
+  | Prisma.InvitationWhereInput
+  | undefined {
   return PERMISSIONS[user.role]?.[resource]?.conditions?.(user);
 }

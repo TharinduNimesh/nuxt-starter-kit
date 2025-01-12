@@ -9,11 +9,7 @@ export const inviteUserSchema = z.object({
     .enum(['USER', 'ADMIN'] as const, {
       required_error: 'Role is required',
       invalid_type_error: 'Invalid role selected'
-    }),
-  message: z
-    .string()
-    .max(500, 'Message cannot exceed 500 characters')
-    .optional()
+    })
 })
 
 export type InviteUserSchema = z.infer<typeof inviteUserSchema>
@@ -28,7 +24,11 @@ export const acceptInvitationSchema = z.object({
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-    )
+    ),
+  confirmPassword: z.string().min(8, 'Confirm Password is required'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
 })
 
 export type AcceptInvitationSchema = z.infer<typeof acceptInvitationSchema>

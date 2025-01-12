@@ -26,8 +26,8 @@ export default defineEventHandler(async (event: H3Event) => {
     // Add auth context for downstream handlers
     event.context.auth = {
       user,
-      can: (resource: string, operation: string, data?: any) => 
-        can(user, resource as any, operation as any, data),
+      can: async (resource: string, operation: string, data?: any) => 
+        await can(user, resource as any, operation as any, data),
       getConditions: (resource: string) => 
         getConditions(user, resource as any)
     };

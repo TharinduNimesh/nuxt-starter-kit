@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invitation to Join</title>
+    <style>
+      :root {
+        --text-primary: #2c3e50;
+        --text-secondary: #505965;
+        --highlight-bg: #e7f3ff;
+        --highlight-text: #007bff;
+        --bg-color: #ffffff;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --text-primary: #ffffff;
+          --text-secondary: #e2e2e2;
+          --highlight-bg: #1a4977;
+          --highlight-text: #66b1ff;
+          --bg-color: #1a1a1a;
+        }
+      }
+    </style>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    "
+  >
+    <table role="presentation" style="width: 100%; border-collapse: collapse">
+      <tr>
+        <td
+          style="padding: 20px 0; text-align: center; background-color: #ffffff"
+        >
+          <table
+            role="presentation"
+            style="
+              width: 600px;
+              margin: 0 auto;
+              background-color: #ffffff;
+              border-radius: 8px;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td style="padding: 40px 30px; text-align: center">
+                <img
+                  src="https://eversoft.lk/assets/img/logo.png"
+                  alt="Logo"
+                  style="max-width: 80px; height: auto"
+                />
+              </td>
+            </tr>
+
+            <!-- Main Content -->
+            <tr>
+              <td
+                style="
+                  padding: 20px 30px;
+                  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+                "
+              >
+                <h1
+                  style="
+                    color: var(--text-primary);
+                    font-size: 28px;
+                    margin: 0 0 25px;
+                    text-align: center;
+                    font-weight: 700;
+                    letter-spacing: -0.5px;
+                  "
+                >
+                  You're Invited! 🎉
+                </h1>
+                <p
+                  style="
+                    color: var(--text-secondary);
+                    font-size: 16px;
+                    line-height: 1.6;
+                    margin: 0 0 25px;
+                    text-align: center;
+                  "
+                >
+                  You've been invited to join our platform as a
+                  <strong
+                    style="
+                      color: var(--highlight-text);
+                      background: var(--highlight-bg);
+                      padding: 2px 8px;
+                      border-radius: 4px;
+                    "
+                    >{{role}}</strong
+                  >
+                </p>
+                <p
+                  style="
+                    color: #505965;
+                    font-size: 16px;
+                    line-height: 1.6;
+                    margin: 0 0 30px;
+                    text-align: center;
+                  "
+                >
+                  <strong style="color: #2c3e50">{{inviterName}}</strong> has
+                  invited you to collaborate on our platform.
+                </p>
+
+                <!-- Action Buttons -->
+                <div style="text-align: center; margin: 35px 0">
+                  <a
+                    href="{{invitationLink}}/accept"
+                    style="
+                      display: inline-block;
+                      padding: 14px 32px;
+                      background-color: #007bff;
+                      color: #ffffff;
+                      text-decoration: none;
+                      border-radius: 6px;
+                      font-weight: 600;
+                      font-size: 16px;
+                      margin: 0 10px 15px;
+                      transition: background-color 0.3s ease;
+                    "
+                  >
+                    ✓ Accept Invitation
+                  </a>
+                  <a
+                    href="{{invitationLink}}/decline"
+                    style="
+                      display: inline-block;
+                      padding: 14px 32px;
+                      background-color: #ffffff;
+                      color: #dc3545;
+                      text-decoration: none;
+                      border-radius: 6px;
+                      font-weight: 600;
+                      font-size: 16px;
+                      margin: 0 10px 15px;
+                      border: 2px solid #dc3545;
+                      transition: all 0.3s ease;
+                    "
+                  >
+                    ✕ Decline
+                  </a>
+                </div>
+
+                <!-- Expiry Notice -->
+                <p
+                  style="
+                    color: #6c757d;
+                    font-size: 14px;
+                    text-align: center;
+                    margin: 25px 0 0;
+                    padding-top: 20px;
+                    border-top: 1px solid #e9ecef;
+                  "
+                >
+                  This invitation will expire in <strong>7 days</strong>
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  padding: 30px;
+                  background-color: #f8f9fa;
+                  text-align: center;
+                  border-radius: 0 0 8px 8px;
+                "
+              >
+                <p style="color: #999999; font-size: 14px; margin: 0">
+                  If you didn't expect this invitation, you can safely ignore
+                  this email.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

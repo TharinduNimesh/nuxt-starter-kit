@@ -17,6 +17,7 @@
     "bcrypt": "^5.1.1",
     "jsonwebtoken": "^9.0.2",
     "lodash-es": "^4.17.21",
+    "nodemailer": "^6.9.16",
     "nuxt": "^3.14.1592",
     "pinia": "^2.3.0",
     "uuid": "^11.0.5",
@@ -32,6 +33,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.10.5",
+    "@types/nodemailer": "^6.4.17",
     "prisma": "^6.2.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
