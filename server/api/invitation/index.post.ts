@@ -34,9 +34,10 @@ export default defineEventHandler(async (event) => {
       template: "invitation",
       context: {
         role: invitation.role,
-        inviterName: auth.user.name || auth.user.email,
-        invitationLink: `${baseUrl}/invitation/${invitation.token}`,
+        inviterName: auth.user.name || auth.user.email.split('@')[0],
+        invitationLink: `${baseUrl}/auth/invitation/${invitation.token}`,
         baseUrl: baseUrl as string,
+        email: invitation.email,
       }
     });
   } catch (error) {

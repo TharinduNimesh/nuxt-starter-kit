@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
   
   // If user is authenticated and trying to access auth pages, redirect to console
-  if (user.value && to.path.startsWith('/auth/')) {
+  if (user.value && to.path.startsWith('/auth/sign-in')) {
     return navigateTo('/console')
   }
 })

@@ -8,6 +8,10 @@ import {
 } from "../../../shared/schemas/auth";
 import { rateLimit } from '../../utils/rateLimit'
 
+interface SignUpBody extends SignInSchema {
+  invitationToken?: string;
+}
+
 export default defineEventHandler(async (event) => {
   // Rate limit: 3 attempts per hour
   await rateLimit({
@@ -18,20 +22,14 @@ export default defineEventHandler(async (event) => {
 
   const config = useRuntimeConfig();
   
-  if (!config.public.isSignUpEnabled) {
-    throw createError({
-      statusCode: 403,
-      message: "Sign up is currently disabled",
-    });
-  }
-
   try {
     // Validate and sanitize request body
-    const data = await validateBody<SignInSchema>(event, signUpSchema);
+    const data = await validateBody<SignUpBody>(event, signUpSchema);
+    const email = data.email.toLowerCase();
 
     // Check if user exists (case-insensitive)
     const existingUser = await prisma.user.findUnique({
-      where: { email: data.email.toLowerCase() },
+      where: { email },
     });
 
     if (existingUser) {
@@ -41,16 +39,47 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    // Find active invitation if exists
+    const invitation = await prisma.invitation.findFirst({
+      where: {
+        email,
+        status: "ACCEPTED",
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    // If sign up is disabled and no valid invitation, prevent sign up
+    if (!config.public.isSignUpEnabled && !invitation) {
+      throw createError({
+        statusCode: 403,
+        message: "Sign up is currently disabled",
+      });
+    }
+
     // Hash password
     const hashedPassword = await bcrypt.hash(data.password, 12);
 
-    // Create user with default USER role
-    const user = await prisma.user.create({
-      data: {
-        email: data.email.toLowerCase(),
-        password: hashedPassword,
-        role: 'USER'  // Default role
-      },
+    // Create user with role from invitation or default USER role
+    const user = await prisma.$transaction(async (prisma) => {
+      const newUser = await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          role: invitation?.role || 'USER'  // Use invitation role if available
+        },
+      });
+
+      // If invitation exists, update its status
+      if (invitation) {
+        await prisma.invitation.update({
+          where: { id: invitation.id },
+          data: { status: "ACCEPTED" },
+        });
+      }
+
+      return newUser;
     });
 
     // Generate tokens with role

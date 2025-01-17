@@ -79,10 +79,31 @@ const PERMISSIONS: {
       description: "Can verify and accept/reject invitations with valid token",
       check: async (_, data) => {
         if (!data?.token || !data?.email) return false;
-        const invitation = await prisma.invitation.findFirst({
-          where: { token: data.token, email: data.email },
-        });
-        return !!invitation;
+
+        try {
+          let invitation = null;
+          if (data.id) {
+            invitation = await prisma.invitation.findFirst({
+              where: {
+                id: data.id,
+                email: data.email,
+                token: data.token,
+                status: "PENDING",
+              },
+            });
+          } else {
+            invitation = await prisma.invitation.findFirst({
+              where: {
+                token: data.token,
+                email: data.email,
+                status: "PENDING",
+              },
+            });
+          }
+          return !!invitation;
+        } catch (error) {
+          return false;
+        }
       },
     },
   },

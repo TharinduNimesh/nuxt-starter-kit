@@ -4,7 +4,14 @@ import { can, getConditions } from "../utils/permissions";
 import type { User } from "@prisma/client";
 
 export default defineEventHandler(async (event: H3Event) => {
-  if (!event.path.startsWith("/api/") || event.path.includes("/api/auth/")) {
+  const publicRoutes = [
+    "/api/auth/",
+    "/api/public/",
+  ];
+  if (
+    !event.path.startsWith("/api/") ||
+    publicRoutes.some((route) => event.path.includes(route))
+  ) {
     return;
   }
 
@@ -16,7 +23,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
     const payload = verifyAccessToken(token);
     const user = await prisma.user.findUnique({
-      where: { id: payload.userId }
+      where: { id: payload.userId },
     });
 
     if (!user) {
@@ -26,12 +33,10 @@ export default defineEventHandler(async (event: H3Event) => {
     // Add auth context for downstream handlers
     event.context.auth = {
       user,
-      can: async (resource: string, operation: string, data?: any) => 
+      can: async (resource: string, operation: string, data?: any) =>
         await can(user, resource as any, operation as any, data),
-      getConditions: (resource: string) => 
-        getConditions(user, resource as any)
+      getConditions: (resource: string) => getConditions(user, resource as any),
     };
-
   } catch (error) {
     throw createError({
       statusCode: 401,
