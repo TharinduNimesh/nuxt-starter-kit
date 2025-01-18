@@ -6,6 +6,7 @@ import type { User } from "@prisma/client";
 export default defineEventHandler(async (event: H3Event) => {
   const publicRoutes = [
     "/api/auth/",
+    "/api/uploadthing",
     "/api/public/",
   ];
   if (

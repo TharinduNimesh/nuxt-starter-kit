@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
-  modules: ["@nuxt/ui", "@pinia/nuxt"],
+  modules: ["@nuxt/ui", "@pinia/nuxt", "@uploadthing/nuxt"],
 
   icon: {
     serverBundle: {
@@ -18,6 +18,10 @@ export default defineNuxtConfig({
   tailwindcss: {
     cssPath: "~/assets/css/tailwind.css",
     configPath: "~/tailwind.config.ts",
+  },
+
+  uploadthing: {
+    routerPath: "~~/server/uploadthing.ts",
   },
 
   runtimeConfig: {
